@@ -31,7 +31,13 @@ then
     FFMPEG="$(whereis ffmpeg)"
 fi
 
-if [ ! -z "$FFMPEG" ]
+FFPROBE="$(which ffprobe)"
+if [ -z "$FFPROBE" ]
+then
+    FFMPEG="$(whereis ffprobe)"
+fi
+
+if [ ! -z "$FFPROBE" ]
 then
     echo "ffmpeg was found in system"
 else
@@ -41,14 +47,11 @@ else
     exit
 fi
 
-ORIG="$(ffmpeg -i "$IN" 2>&1 | sed -e '/Video/!d; s/^.*,\s\([0-9]*x[0-9]*\).*/\1/')"
-echo "input size $ORIG"
-
 if [ -n "$SIZE" ]
 then
-    # split input resolution
-    IW=${ORIG%x*}
-    IH=${ORIG#*x}
+    # aquire input resolution
+    IW="$($FFPROBE -v 0 -show_streams "$IN" 2>&1 | grep ^width | sed s/width=//)"
+    IH="$($FFPROBE -v 0 -show_streams "$IN" 2>&1 | grep ^height | sed s/height=//)"
     # split bound resolution
     OW=${SIZE%x*}
     OH=${SIZE#*x}
@@ -65,10 +68,11 @@ then
         RH=$(echo "$OH / 4 * 4" | bc)
     fi
 
+    echo "input size ${IW}x${IH}"
     echo "boundary size $SIZE"
     echo "aspect ratio $SA"
 
-    RESULTSIZE=${RW}x$RH
+    RESULTSIZE="${RW}x${RH}"
     echo "result size $RESULTSIZE"
     IFRESIZE="-s $RESULTSIZE"
 else
@@ -76,7 +80,7 @@ else
     IFRESIZE=
 fi
 
-
+exit
 $FFMPEG \
     -i "$IN" \
     $IFRESIZE \
