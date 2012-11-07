@@ -34,17 +34,17 @@ fi
 FFPROBE="$(which ffprobe)"
 if [ -z "$FFPROBE" ]
 then
-    FFMPEG="$(whereis ffprobe)"
+    FFPROBE="$(whereis ffprobe)"
 fi
 
-if [ ! -z "$FFPROBE" ]
+if [ -z "$FFMPEG" ]
 then
-    echo "ffmpeg was found in system"
-else
     echo "ffpeg was not found in system"
     echo "please install it first"
     echo "or add it to you PATH"
     exit
+else
+    echo "ffmpeg was found in system"
 fi
 
 if [ -n "$SIZE" ]
@@ -80,7 +80,6 @@ else
     IFRESIZE=
 fi
 
-exit
 $FFMPEG \
     -i "$IN" \
     $IFRESIZE \
