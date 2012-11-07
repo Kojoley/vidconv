@@ -4,6 +4,9 @@
 # 2. Setup variables
 # 3. Process ffmpeg convertation
 
+VCODEC=libx264
+ACODEC=aac
+ADVARG="-strict experimental" # "-strict experimental" is required by using aac codec (use libfaac instead, if you can)
 
 IN=$1
 OUT=$2
@@ -24,10 +27,10 @@ fi
 
 if [ -n "$(which ffmpeg)" ]
 then
-    echo ffmpeg was found in system
+    echo "ffmpeg was found in system"
 else
-    echo ffpeg was not found in system
-    echo please install it
+    echo "ffpeg was not found in system"
+    echo "please install it"
     exit
 fi
 
@@ -66,11 +69,11 @@ else
     IFRESIZE=
 fi
 
-# "-strict experimental" is required by using aac codec (use libfaac instead, if you can)
+
 ffmpeg \
     -i "$IN" \
     $IFRESIZE \
-    -vcodec libx264 \
-    -acodec aac \
-    -strict experimental \
+    -vcodec $VCODEC \
+    -acodec $ACODEC \
+    $ADVARG \
     "$OUT"
