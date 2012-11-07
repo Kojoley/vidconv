@@ -25,12 +25,19 @@ then
     exit
 fi
 
-if [ -n "$(which ffmpeg)" ]
+FFMPEG="$(which ffmpeg)"
+if [ -z "$FFMPEG" ]
+then
+    FFMPEG="$(whereis ffmpeg)"
+fi
+
+if [ ! -z "$FFMPEG" ]
 then
     echo "ffmpeg was found in system"
 else
     echo "ffpeg was not found in system"
-    echo "please install it"
+    echo "please install it first"
+    echo "or add it to you PATH"
     exit
 fi
 
@@ -70,7 +77,7 @@ else
 fi
 
 
-ffmpeg \
+$FFMPEG \
     -i "$IN" \
     $IFRESIZE \
     -vcodec $VCODEC \
