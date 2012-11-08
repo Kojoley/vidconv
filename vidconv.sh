@@ -15,7 +15,7 @@ SIZE=$3
 if [ -z "$IN" ] || [ -z "$OUT" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]
 then
     ME="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")" #"
-    echo "usage: $ME <input> <output> [resolution]"
+    echo "usage: $ME <input> <output> [resolution] [-x </path/to/ffmpeg>]"
     exit
 fi
 
@@ -25,23 +25,43 @@ then
     exit
 fi
 
-FFMPEG="$(which ffmpeg)"
-if [ -z "$FFMPEG" ]
+ARGS=("$@")
+for (( I = 0; I < ${#ARGS[@]}; I++)); do
+    #echo "$I:${ARGS[${I}]}"
+    case ${ARGS[${I}]} in
+        "-x")
+            ((I++))
+            CUSTOM_PATH="${ARGS[${I}]}"
+            echo "setting custom path to '$CUSTOM_PATH'"
+            ;;
+    esac
+done
+
+if [ -z "$CUSTOM_PATH" ]
 then
-    FFMPEG="$(whereis ffmpeg)"
+    if [ -z "$FFMPEG" ]
+    then
+        FFMPEG="$(which ffmpeg)"
+    fi
+    if [ -z "$FFMPEG" ]
+    then
+        FFMPEG="$(whereis ffmpeg)"
+    fi
+
+    FFPROBE="$(dirname ${FFMPEG})/ffprobe"
+else
+    FFMPEG="$CUSTOM_PATH/ffmpeg"
+    FFPROBE="$CUSTOM_PATH/ffprobe"
 fi
 
-FFPROBE="$(which ffprobe)"
-if [ -z "$FFPROBE" ]
+echo "check for existing of '$FFMPEG'"
+if [ ! -f "$FFMPEG" ]
 then
-    FFPROBE="$(whereis ffprobe)"
-fi
-
-if [ -z "$FFMPEG" ]
-then
+    echo -e '\E[031;1m'"\033[1m"
     echo "ffpeg was not found in system"
     echo "please install it first"
     echo "or add it to you PATH"
+    echo -en "\033[0m"
     exit
 else
     echo "ffmpeg was found in system"
