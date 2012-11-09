@@ -14,7 +14,7 @@ SIZE=$3
 
 if [ -z "$IN" ] || [ -z "$OUT" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]
 then
-    ME="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")" #"
+    ME="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
     echo "usage: $ME <input> <output> [resolution] [-x </path/to/ffmpeg>]"
     exit
 fi
@@ -27,7 +27,6 @@ fi
 
 ARGS=("$@")
 for (( I = 0; I < ${#ARGS[@]}; I++)); do
-    #echo "$I:${ARGS[${I}]}"
     case ${ARGS[${I}]} in
         "-x")
             ((I++))
