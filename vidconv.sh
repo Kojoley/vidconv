@@ -34,6 +34,16 @@ for (( I = 0; I < ${#ARGS[@]}; I++)); do
             CUSTOM_PATH="${ARGS[${I}]}"
             echo "setting custom path to '$CUSTOM_PATH'"
             ;;
+        "-acodec")
+            ((I++))
+            ACODEC="${ARGS[${I}]}"
+            echo "setting audio codec to '$ACODEC'"
+            ;;
+        "-vcodec")
+            ((I++))
+            VCODEC="${ARGS[${I}]}"
+            echo "setting video codec to '$VCODEC'"
+            ;;
     esac
 done
 
