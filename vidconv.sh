@@ -58,14 +58,23 @@ then
         FFMPEG="$(whereis ffmpeg)"
     fi
 
-    FFPROBE="$(dirname ${FFMPEG})/ffprobe"
+    if [ -z "$FFPROBE" ]
+    then
+        FFPROBE="$(which ffprobe)"
+    fi
+    if [ -z "$FFPROBE" ]
+    then
+        FFPROBE="$(whereis ffprobe)"
+    fi
 else
-    FFMPEG="$CUSTOM_PATH/ffmpeg"
-    FFPROBE="$CUSTOM_PATH/ffprobe"
+    export PATH=$CUSTOM_PATH:$PATH
+    echo "current PATH=$PATH"
+    FFMPEG="ffmpeg"
+    FFPROBE="ffprobe"
 fi
 
 echo "check for existing of '$FFMPEG'"
-if [ ! -f "$FFMPEG" ]
+if [ ! -f "$FFMPEG" ] && [ ! -f "$(which $FFMPEG)" ]
 then
     echo -e '\E[031;1m'"\033[1m"
     echo "ffpeg was not found in system"
